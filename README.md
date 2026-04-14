@@ -2,6 +2,17 @@
 
 API backend do projeto usando Python.
 
+## Fluxo de desenvolvimento
+
+Para contribuir no projeto, siga este fluxo:
+
+1. Clone o repositório e entre na branch `develop`.
+2. Crie uma nova branch a partir de `develop` para implementar sua alteração.
+3. Faça o desenvolvimento, rode os testes e valide o lint localmente.
+4. Envie sua branch para o repositório remoto.
+5. Abra uma Pull Request com destino para a branch `develop`.
+6. Após a revisão e aprovação, faça o merge da Pull Request.
+
 ## O que este projeto usa
 
 - `FastAPI`: camada HTTP. Recebe requisições, valida entrada e devolve respostas da API.
@@ -96,7 +107,9 @@ uv run task db-revision -- "nome_da_migration"
 
 O projeto usa SQLite. O banco local fica no arquivo:
 
-`/Users/diego/dev/projects/utfpr/campus-cultural/backend/database/app.db`
+`/backend/database/app.db`
+
+Esse arquivo fica dentro da pasta do projeto e será criado localmente durante o uso da aplicação.
 
 Se quiser limpar o banco local, use:
 

@@ -1,37 +1,56 @@
 from __future__ import annotations
 
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.features.user.user_models import UserModel
+from api.features.user.user_models import User
+from api.shared.exceptions import ConflictError, ErrorCode
 
 
 class UserRepository:
-    def __init__(self, session: Session) -> None:
+    def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
-    def create(self, user: UserModel) -> UserModel:
+    async def create(self, user: User) -> User:
         self.session.add(user)
-        self.session.commit()
-        self.session.refresh(user)
+        try:
+            await self.session.commit()
+        except IntegrityError as exc:
+            await self.session.rollback()
+            raise ConflictError(
+                "Ja existe um usuario com este RA",
+                code=ErrorCode.USER_RA_ALREADY_EXISTS,
+                details={"field": "ra", "value": user.ra},
+            ) from exc
+        await self.session.refresh(user)
         return user
 
-    def list_all(self) -> list[UserModel]:
-        return list(self.session.scalars(select(UserModel).order_by(UserModel.id)))
+    async def list_all(self) -> list[User]:
+        result = await self.session.scalars(select(User).order_by(User.id))
+        return list(result)
 
-    def get_by_id(self, user_id: int) -> UserModel | None:
-        return self.session.get(UserModel, user_id)
+    async def get_by_id(self, user_id: int) -> User | None:
+        return await self.session.get(User, user_id)
 
-    def get_by_ra(self, ra: str) -> UserModel | None:
-        statement = select(UserModel).where(UserModel.ra == ra)
-        return self.session.scalar(statement)
+    async def get_by_ra(self, ra: str) -> User | None:
+        statement = select(User).where(User.ra == ra)
+        return await self.session.scalar(statement)
 
-    def update(self, user: UserModel) -> UserModel:
+    async def update(self, user: User) -> User:
         self.session.add(user)
-        self.session.commit()
-        self.session.refresh(user)
+        try:
+            await self.session.commit()
+        except IntegrityError as exc:
+            await self.session.rollback()
+            raise ConflictError(
+                "Ja existe um usuario com este RA",
+                code=ErrorCode.USER_RA_ALREADY_EXISTS,
+                details={"field": "ra", "value": user.ra},
+            ) from exc
+        await self.session.refresh(user)
         return user
 
-    def delete(self, user: UserModel) -> None:
-        self.session.delete(user)
-        self.session.commit()
+    async def delete(self, user: User) -> None:
+        await self.session.delete(user)
+        await self.session.commit()

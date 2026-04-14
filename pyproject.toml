@@ -5,8 +5,10 @@ description = "Campus Cultural backend API"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "aiosqlite>=0.21.0",
     "alembic>=1.16.0",
     "fastapi>=0.115.0",
+    "greenlet>=3.2.1",
     "pydantic>=2.11.0",
     "pydantic-settings>=2.8.0",
     "sqlalchemy>=2.0.40",
@@ -17,6 +19,7 @@ dependencies = [
 dev = [
     "httpx>=0.28.0",
     "pytest>=8.3.0",
+    "pytest-cov>=6.1.1",
     "ruff>=0.11.0",
     "taskipy>=1.14.0",
 ]
@@ -24,6 +27,13 @@ dev = [
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["api", "database"]
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
 
 [tool.ruff]
 line-length = 100
@@ -35,6 +45,7 @@ select = ["E", "F", "I", "B"]
 [tool.taskipy.tasks]
 dev = "uv run uvicorn main:app --reload"
 test = "uv run pytest"
+coverage = "uv run pytest --cov --cov-report=term-missing"
 lint = "uv run ruff check ."
 format = "uv run ruff format ."
 check = "uv run ruff check . && uv run pytest"

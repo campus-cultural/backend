@@ -1,34 +1,47 @@
 from __future__ import annotations
 
-from collections.abc import Generator
-from contextlib import contextmanager
+from collections.abc import AsyncGenerator
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 
-from api.features.user import user_models  # noqa: F401
 from database.config.base import Base
 from database.config.settings import get_database_url
 
 
 class DatabaseManager:
     def __init__(self, database_url: str | None = None) -> None:
-        resolved_database_url = database_url or get_database_url()
+        resolved_database_url = self._to_async_database_url(database_url or get_database_url())
         connect_args = (
             {"check_same_thread": False} if resolved_database_url.startswith("sqlite") else {}
         )
-        self.engine = create_engine(resolved_database_url, connect_args=connect_args)
-        self.session_factory = sessionmaker(
-            bind=self.engine, autocommit=False, autoflush=False, expire_on_commit=False
+        self.engine: AsyncEngine = create_async_engine(
+            resolved_database_url,
+            connect_args=connect_args,
+        )
+        self.session_factory = async_sessionmaker(
+            bind=self.engine,
+            autoflush=False,
+            expire_on_commit=False,
+            class_=AsyncSession,
         )
 
-    def create_tables(self) -> None:
-        Base.metadata.create_all(bind=self.engine)
+    @staticmethod
+    def _to_async_database_url(database_url: str) -> str:
+        if database_url.startswith("sqlite:///") and not database_url.startswith(
+            "sqlite+aiosqlite:///"
+        ):
+            return database_url.replace("sqlite:///", "sqlite+aiosqlite:///", 1)
+        return database_url
 
-    @contextmanager
-    def session(self) -> Generator[Session, None, None]:
-        session = self.session_factory()
-        try:
+    async def create_tables(self) -> None:
+        async with self.engine.begin() as connection:
+            await connection.run_sync(Base.metadata.create_all)
+
+    async def session(self) -> AsyncGenerator[AsyncSession, None]:
+        async with self.session_factory() as session:
             yield session
-        finally:
-            session.close()
