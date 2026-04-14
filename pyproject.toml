@@ -1,7 +1,44 @@
 [project]
 name = "backend"
 version = "0.1.0"
-description = "Add your description here"
+description = "Campus Cultural backend API"
 readme = "README.md"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "alembic>=1.16.0",
+    "fastapi>=0.115.0",
+    "pydantic>=2.11.0",
+    "pydantic-settings>=2.8.0",
+    "sqlalchemy>=2.0.40",
+    "uvicorn>=0.34.0",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.0",
+    "pytest>=8.3.0",
+    "ruff>=0.11.0",
+    "taskipy>=1.14.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B"]
+
+[tool.taskipy.tasks]
+dev = "uv run uvicorn main:app --reload"
+test = "uv run pytest"
+lint = "uv run ruff check ."
+format = "uv run ruff format ."
+check = "uv run ruff check . && uv run pytest"
+db-clean = "rm -f database/app.db"
+db-revision = "uv run alembic revision --autogenerate -m"
+db-upgrade = "uv run alembic upgrade head"
+db-downgrade = "uv run alembic downgrade -1"
