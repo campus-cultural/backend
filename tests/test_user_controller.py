@@ -24,6 +24,27 @@ def test_create_user_returns_created_user(client: TestClient) -> None:
     }
 
 
+def test_create_user_accepts_admin_tipo(client: TestClient) -> None:
+    response = client.post(
+        "/usuarios",
+        json={
+            "tipo": "admin",
+            "ra": "2024009",
+            "nome": "Administrador",
+            "senha": "segredo-admin",
+        },
+    )
+
+    assert response.status_code == 201
+    assert response.json() == {
+        "id": 1,
+        "tipo": "admin",
+        "ra": "2024009",
+        "nome": "Administrador",
+        "senha": "segredo-admin",
+    }
+
+
 def test_list_users_returns_created_users(client: TestClient) -> None:
     client.post(
         "/usuarios",

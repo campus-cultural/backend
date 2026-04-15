@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.features.user.user_models import User
+from api.features.user.user import User
 from api.shared.exceptions import ConflictError, ErrorCode
 
 

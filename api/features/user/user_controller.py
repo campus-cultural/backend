@@ -4,6 +4,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Response, status
 
+from api.features.user.user import User
 from api.features.user.user_schemas import (
     UserCreateIn,
     UserCreateOut,
@@ -13,7 +14,6 @@ from api.features.user.user_schemas import (
 )
 from api.features.user.user_service import UserService
 from api.shared.dependencies import get_user_service
-from api.features.user.user_models import User
 
 router = APIRouter(prefix="/usuarios", tags=["usuarios"])
 

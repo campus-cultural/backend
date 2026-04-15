@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from typing import Literal
-
 from pydantic import BaseModel, ConfigDict
+
+from api.features.user.user import UserTipo
 
 
 class UserBaseSchema(BaseModel):
-    tipo: Literal["aluno", "professor"]
+    tipo: UserTipo
     ra: str
     nome: str
     senha: str

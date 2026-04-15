@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from api.features.user.user_models import User
+from api.features.user.user import User
 from api.features.user.user_repository import UserRepository
 from api.features.user.user_schemas import UserCreateIn, UserUpdateIn
 from api.shared.exceptions import ErrorCode, ResourceNotFoundError
