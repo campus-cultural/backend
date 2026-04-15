@@ -2,30 +2,35 @@ from __future__ import annotations
 
 from enum import StrEnum
 
-from sqlalchemy import Enum, String
+from sqlalchemy import Boolean, CheckConstraint, Enum, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from database.config.base import Base
 
 
-class UserTipo(StrEnum):
-    ALUNO = "aluno"
+class UserRole(StrEnum):
+    STUDENT = "student"
     PROFESSOR = "professor"
     ADMIN = "admin"
 
 
 class User(Base):
-    __tablename__ = "usuarios"
+    __tablename__ = "users"
+    __table_args__ = (
+        CheckConstraint("role = 'student' OR ra IS NULL", name="ck_users_ra_only_for_students"),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    tipo: Mapped[UserTipo] = mapped_column(
+    role: Mapped[UserRole] = mapped_column(
         Enum(
-            UserTipo,
+            UserRole,
             native_enum=False,
             values_callable=lambda enum_class: [member.value for member in enum_class],
         ),
         nullable=False,
     )
-    ra: Mapped[str] = mapped_column(String(50), nullable=False, unique=True, index=True)
-    nome: Mapped[str] = mapped_column(String(255), nullable=False)
-    senha: Mapped[str] = mapped_column(String(255), nullable=False)
+    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    email: Mapped[str] = mapped_column(String(255), nullable=False)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    ra: Mapped[str | None] = mapped_column(String(50), nullable=True, unique=True, index=True)

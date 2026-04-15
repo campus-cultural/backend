@@ -2,6 +2,7 @@
 
 ## Do
 
+- Name classes, functions, properties in english
 - Keep the existing layering: controller -> service -> repository.
 - Prefer explicit FastAPI dependencies with `Annotated[..., Depends(...)]` at the usage site.
 - Keep controllers thin: validate/serialize and delegate business rules to services.

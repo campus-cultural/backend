@@ -15,7 +15,7 @@ from api.features.user.user_schemas import (
 from api.features.user.user_service import UserService
 from api.shared.dependencies import get_user_service
 
-router = APIRouter(prefix="/usuarios", tags=["usuarios"])
+router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.post("", response_model=UserCreateOut, status_code=status.HTTP_201_CREATED)

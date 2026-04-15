@@ -4,6 +4,7 @@ from enum import StrEnum
 from typing import Any
 
 from fastapi import FastAPI, Request, status
+from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
@@ -82,7 +83,7 @@ async def validation_error_handler(_: Request, exc: RequestValidationError) -> J
         content={
             "code": ErrorCode.VALIDATION_ERROR,
             "message": "Dados de entrada invalidos",
-            "details": {"errors": exc.errors()},
+            "details": {"errors": jsonable_encoder(exc.errors())},
         },
     )
 

@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.features.user.user import User
+from api.features.user.user import User, UserRole
 from api.shared.exceptions import ConflictError, ErrorCode
 
 
@@ -19,7 +19,7 @@ class UserRepository:
         except IntegrityError as exc:
             await self.session.rollback()
             raise ConflictError(
-                "Ja existe um usuario com este RA",
+                "A user with this RA already exists",
                 code=ErrorCode.USER_RA_ALREADY_EXISTS,
                 details={"field": "ra", "value": user.ra},
             ) from exc
@@ -37,6 +37,10 @@ class UserRepository:
         statement = select(User).where(User.ra == ra)
         return await self.session.scalar(statement)
 
+    async def get_first_admin(self) -> User | None:
+        statement = select(User).where(User.role == UserRole.ADMIN).order_by(User.id)
+        return await self.session.scalar(statement)
+
     async def update(self, user: User) -> User:
         self.session.add(user)
         try:
@@ -44,7 +48,7 @@ class UserRepository:
         except IntegrityError as exc:
             await self.session.rollback()
             raise ConflictError(
-                "Ja existe um usuario com este RA",
+                "A user with this RA already exists",
                 code=ErrorCode.USER_RA_ALREADY_EXISTS,
                 details={"field": "ra", "value": user.ra},
             ) from exc

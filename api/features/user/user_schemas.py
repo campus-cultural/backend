@@ -1,19 +1,26 @@
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, model_validator
 
-from api.features.user.user import UserTipo
+from api.features.user.user import UserRole
 
 
 class UserBaseSchema(BaseModel):
-    tipo: UserTipo
-    ra: str
-    nome: str
-    senha: str
+    role: UserRole
+    email: str
+    name: str
+    is_active: bool
+    ra: str | None = None
+
+    @model_validator(mode="after")
+    def validate_ra(self) -> UserBaseSchema:
+        if self.role != UserRole.STUDENT and self.ra is not None:
+            raise ValueError("ra must be null for non-student users")
+        return self
 
 
 class UserCreateIn(UserBaseSchema):
-    pass
+    password: str
 
 
 class UserCreateOut(UserBaseSchema):
@@ -29,7 +36,7 @@ class UserReadOut(UserBaseSchema):
 
 
 class UserUpdateIn(UserBaseSchema):
-    pass
+    password: str
 
 
 class UserUpdateOut(UserBaseSchema):
