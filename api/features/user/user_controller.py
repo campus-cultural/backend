@@ -2,32 +2,51 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Body, Depends, Response, status
 
 from api.features.user.user import User
 from api.features.user.user_schemas import (
+    TokenOut,
     UserCreateIn,
     UserCreateOut,
+    UserLoginIn,
     UserReadOut,
     UserUpdateIn,
     UserUpdateOut,
 )
 from api.features.user.user_service import UserService
-from api.shared.dependencies import get_user_service
+from api.shared.dependencies import get_current_user, get_user_service
 
 router = APIRouter(prefix="/users", tags=["users"])
 
 
-@router.post("", response_model=UserCreateOut, status_code=status.HTTP_201_CREATED)
-async def create_user(
+@router.post("/register", response_model=UserCreateOut, status_code=status.HTTP_201_CREATED)
+async def register_user(
     payload: UserCreateIn,
     service: Annotated[UserService, Depends(get_user_service)],
 ) -> UserCreateOut:
     return UserCreateOut.model_validate(await service.create(payload))
 
 
+@router.post("/login", response_model=TokenOut)
+async def login_user(
+    payload: UserLoginIn,
+    service: Annotated[UserService, Depends(get_user_service)],
+) -> TokenOut:
+    return await service.login(payload)
+
+
+@router.post("/refresh-token", response_model=TokenOut)
+async def refresh_token(
+    current_user: Annotated[User, Depends(get_current_user)],
+    service: Annotated[UserService, Depends(get_user_service)],
+) -> TokenOut:
+    return service.create_token(current_user)
+
+
 @router.get("", response_model=list[UserReadOut])
 async def list_users(
+    current_user: Annotated[User, Depends(get_current_user)],
     service: Annotated[UserService, Depends(get_user_service)],
 ) -> list[UserReadOut]:
     users: list[User] = await service.list_all()
@@ -40,6 +59,7 @@ async def list_users(
 @router.get("/{user_id}", response_model=UserReadOut)
 async def get_user(
     user_id: int,
+    current_user: Annotated[User, Depends(get_current_user)],
     service: Annotated[UserService, Depends(get_user_service)],
 ) -> UserReadOut:
     return UserReadOut.model_validate(await service.get_by_id(user_id))
@@ -49,14 +69,40 @@ async def get_user(
 async def update_user(
     user_id: int,
     payload: UserUpdateIn,
+    current_user: Annotated[User, Depends(get_current_user)],
     service: Annotated[UserService, Depends(get_user_service)],
 ) -> UserUpdateOut:
     return UserUpdateOut.model_validate(await service.update(user_id, payload))
 
 
+@router.post("/{user_id}/profile-picture", response_model=UserReadOut)
+async def update_profile_picture(
+    user_id: int,
+    profile_picture: Annotated[bytes, Body(media_type="application/octet-stream")],
+    current_user: Annotated[User, Depends(get_current_user)],
+    service: Annotated[UserService, Depends(get_user_service)],
+) -> UserReadOut:
+    return UserReadOut.model_validate(
+        await service.update_profile_picture(user_id, profile_picture)
+    )
+
+
+@router.get("/{user_id}/profile-picture")
+async def get_profile_picture(
+    user_id: int,
+    current_user: Annotated[User, Depends(get_current_user)],
+    service: Annotated[UserService, Depends(get_user_service)],
+) -> Response:
+    return Response(
+        content=await service.get_profile_picture(user_id),
+        media_type="application/octet-stream",
+    )
+
+
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(
     user_id: int,
+    current_user: Annotated[User, Depends(get_current_user)],
     service: Annotated[UserService, Depends(get_user_service)],
 ) -> Response:
     await service.delete(user_id)

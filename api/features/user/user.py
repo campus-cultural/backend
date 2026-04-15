@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from enum import StrEnum
 
-from sqlalchemy import Boolean, CheckConstraint, Enum, String
+from sqlalchemy import Boolean, CheckConstraint, Enum, LargeBinary, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from database.config.base import Base
@@ -30,7 +30,8 @@ class User(Base):
         nullable=False,
     )
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
-    email: Mapped[str] = mapped_column(String(255), nullable=False)
+    email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True, index=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     ra: Mapped[str | None] = mapped_column(String(50), nullable=True, unique=True, index=True)
+    profile_picture: Mapped[bytes | None] = mapped_column(LargeBinary, nullable=True)

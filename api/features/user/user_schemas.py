@@ -23,6 +23,16 @@ class UserCreateIn(UserBaseSchema):
     password: str
 
 
+class UserLoginIn(BaseModel):
+    email: str
+    password: str
+
+
+class TokenOut(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+
+
 class UserCreateOut(UserBaseSchema):
     model_config = ConfigDict(from_attributes=True)
 

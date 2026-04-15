@@ -10,7 +10,11 @@ from fastapi.responses import JSONResponse
 
 
 class ErrorCode(StrEnum):
+    INVALID_CREDENTIALS = "invalid_credentials"
+    INVALID_TOKEN = "invalid_token"
+    USER_PROFILE_PICTURE_NOT_FOUND = "user_profile_picture_not_found"
     USER_NOT_FOUND = "user_not_found"
+    USER_EMAIL_ALREADY_EXISTS = "user_email_already_exists"
     USER_RA_ALREADY_EXISTS = "user_ra_already_exists"
     VALIDATION_ERROR = "validation_error"
     INTERNAL_ERROR = "internal_error"
@@ -73,8 +77,29 @@ class ConflictError(AppError):
         )
 
 
+class UnauthorizedError(AppError):
+    def __init__(
+        self,
+        message: str,
+        *,
+        code: ErrorCode,
+        details: dict[str, Any] | None = None,
+    ) -> None:
+        super().__init__(
+            message,
+            code=code,
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            details=details,
+        )
+
+
 async def app_error_handler(_: Request, exc: AppError) -> JSONResponse:
-    return JSONResponse(status_code=exc.status_code, content=exc.to_response())
+    headers = (
+        {"WWW-Authenticate": "Bearer"}
+        if exc.status_code == status.HTTP_401_UNAUTHORIZED
+        else None
+    )
+    return JSONResponse(status_code=exc.status_code, content=exc.to_response(), headers=headers)
 
 
 async def validation_error_handler(_: Request, exc: RequestValidationError) -> JSONResponse:
