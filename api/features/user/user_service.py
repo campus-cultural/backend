@@ -21,6 +21,11 @@ class UserService:
             **user_data,
             password_hash=password_hash.hash(payload.password),
         )
+        if user.role == UserRole.ADMIN:
+            raise UnauthorizedError(
+                "Admin users cannot be created",
+                code=ErrorCode.INVALID_CREDENTIALS,
+            )
         return await self.repository.create(user)
 
     async def login(self, payload: UserLoginIn) -> TokenOut:
