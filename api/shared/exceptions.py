@@ -92,6 +92,21 @@ class UnauthorizedError(AppError):
             details=details,
         )
 
+class BadRequestError(AppError):
+    def __init__(
+        self,
+        message: str,
+        *,
+        code: ErrorCode,
+        details: dict[str, Any] | None = None,
+    ) -> None:
+        super().__init__(
+            message,
+            code=code,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
 
 async def app_error_handler(_: Request, exc: AppError) -> JSONResponse:
     headers = (

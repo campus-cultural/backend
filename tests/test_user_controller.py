@@ -272,7 +272,7 @@ def test_list_users_with_inactive_token_user_returns_unauthorized(client: TestCl
     }
 
 
-def test_register_user_accepts_admin_role(client: TestClient) -> None:
+def test_register_user_rejects_admin_role(client: TestClient) -> None:
     response = client.post(
         "/users/register",
         json={
@@ -287,17 +287,7 @@ def test_register_user_accepts_admin_role(client: TestClient) -> None:
         },
     )
 
-    assert response.status_code == 201
-    assert response.json() == {
-        "id": 2,
-        "role": "admin",
-        "email": "another-admin@example.com",
-        "name": "Administrador",
-        "last_name": "Admin",
-        "is_active": True,
-        "ra": None,
-        "birth_date": None,
-    }
+    assert response.status_code == 400
 
 
 def test_register_non_student_user_with_ra_returns_validation_error(client: TestClient) -> None:
