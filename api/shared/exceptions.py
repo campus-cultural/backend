@@ -95,9 +95,7 @@ class UnauthorizedError(AppError):
 
 async def app_error_handler(_: Request, exc: AppError) -> JSONResponse:
     headers = (
-        {"WWW-Authenticate": "Bearer"}
-        if exc.status_code == status.HTTP_401_UNAUTHORIZED
-        else None
+        {"WWW-Authenticate": "Bearer"} if exc.status_code == status.HTTP_401_UNAUTHORIZED else None
     )
     return JSONResponse(status_code=exc.status_code, content=exc.to_response(), headers=headers)
 

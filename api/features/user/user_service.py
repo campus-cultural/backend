@@ -55,8 +55,10 @@ class UserService:
             password_hash=password_hash.hash("admin123"),
             email="admin@example.com",
             name="super_user",
+            last_name="admin",
             is_active=True,
             ra=None,
+            birth_date=None,
         )
         return await self.repository.create(user)
 
