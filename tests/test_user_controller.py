@@ -19,9 +19,11 @@ def student_payload() -> dict[str, object]:
         "role": "student",
         "email": "diego@example.com",
         "name": "Diego",
+        "last_name": "Ferraz",
         "is_active": True,
         "ra": "2024001",
         "password": "secret",
+        "birth_date": None,
     }
 
 
@@ -44,8 +46,10 @@ def test_startup_creates_default_admin_user(client: TestClient) -> None:
             "role": "admin",
             "email": "admin@example.com",
             "name": "super_user",
+            "last_name": "admin",
             "is_active": True,
             "ra": None,
+            "birth_date": None,
         }
     ]
 
@@ -112,8 +116,10 @@ def test_register_user_is_public_and_returns_created_user(client: TestClient) ->
         "role": "student",
         "email": "diego@example.com",
         "name": "Diego",
+        "last_name": "Ferraz",
         "is_active": True,
         "ra": "2024001",
+        "birth_date": None,
     }
 
 
@@ -266,28 +272,22 @@ def test_list_users_with_inactive_token_user_returns_unauthorized(client: TestCl
     }
 
 
-def test_register_user_accepts_admin_role(client: TestClient) -> None:
+def test_register_user_rejects_admin_role(client: TestClient) -> None:
     response = client.post(
         "/users/register",
         json={
             "role": "admin",
             "email": "another-admin@example.com",
             "name": "Administrador",
+            "last_name": "Admin",
             "is_active": True,
             "ra": None,
             "password": "admin-secret",
+            "birth_date": None,
         },
     )
 
-    assert response.status_code == 201
-    assert response.json() == {
-        "id": 2,
-        "role": "admin",
-        "email": "another-admin@example.com",
-        "name": "Administrador",
-        "is_active": True,
-        "ra": None,
-    }
+    assert response.status_code == 400
 
 
 def test_register_non_student_user_with_ra_returns_validation_error(client: TestClient) -> None:
@@ -297,9 +297,11 @@ def test_register_non_student_user_with_ra_returns_validation_error(client: Test
             "role": "professor",
             "email": "maria@example.com",
             "name": "Maria",
+            "last_name": "Silva",
             "is_active": True,
             "ra": "2024002",
             "password": "strong-password",
+            "birth_date": None,
         },
     )
 
@@ -315,9 +317,11 @@ def test_list_users_returns_created_users(client: TestClient) -> None:
             "role": "professor",
             "email": "maria@example.com",
             "name": "Maria",
+            "last_name": "Silva",
             "is_active": True,
             "ra": None,
             "password": "strong-password",
+            "birth_date": None,
         },
     )
 
@@ -330,24 +334,30 @@ def test_list_users_returns_created_users(client: TestClient) -> None:
             "role": "admin",
             "email": "admin@example.com",
             "name": "super_user",
+            "last_name": "admin",
             "is_active": True,
             "ra": None,
+            "birth_date": None,
         },
         {
             "id": 2,
             "role": "student",
             "email": "diego@example.com",
             "name": "Diego",
+            "last_name": "Ferraz",
             "is_active": True,
             "ra": "2024001",
+            "birth_date": None,
         },
         {
             "id": 3,
             "role": "professor",
             "email": "maria@example.com",
             "name": "Maria",
+            "last_name": "Silva",
             "is_active": True,
             "ra": None,
+            "birth_date": None,
         },
     ]
 
@@ -371,9 +381,11 @@ def test_update_user_uses_id_from_url_and_returns_updated_user(client: TestClien
             "role": "professor",
             "email": "diego.updated@example.com",
             "name": "Diego Atualizado",
+            "last_name": "Ferraz Atualizado",
             "is_active": False,
             "ra": None,
             "password": "new-password",
+            "birth_date": None,
         },
     )
 
@@ -383,8 +395,10 @@ def test_update_user_uses_id_from_url_and_returns_updated_user(client: TestClien
         "role": "professor",
         "email": "diego.updated@example.com",
         "name": "Diego Atualizado",
+        "last_name": "Ferraz Atualizado",
         "is_active": False,
         "ra": None,
+        "birth_date": None,
     }
 
 
