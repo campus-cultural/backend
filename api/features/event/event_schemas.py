@@ -6,7 +6,6 @@ from pydantic import BaseModel, ConfigDict
 
 
 class EventBaseSchema(BaseModel):
-    user_id: int
     image: bytes | None = None
     event_datetime: datetime
     event_location: str

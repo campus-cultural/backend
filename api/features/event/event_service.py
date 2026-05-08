@@ -21,6 +21,7 @@ class EventService:
 
     async def list_all(self) -> list[Event]:
         return await self.repository.list_all()
+    
 
     async def get_by_id(self, event_id: int) -> Event:
         event = await self.repository.get_by_id(event_id)
@@ -35,22 +36,18 @@ class EventService:
     async def list_by_user_id(self, user_id: int) -> list[Event]:
         return await self.repository.get_by_user_id(user_id)
 
-    async def update(
-        self,
-        event_id: int,
-        payload: EventUpdateIn,
-        user: User,
-    ) -> Event:
-        event = await self.get_by_id(event_id)
+    async def update(self, event_id: int, payload: EventUpdateIn, current_user: User) -> Event:
+        event = await self.repository.get_by_id(event_id)
 
-        #  proteção: só dono pode alterar
-        if event.user_id != user.id:
-            raise ResourceNotFoundError(
-                "Event not found",
-                code=ErrorCode.EVENT_NOT_FOUND,
-            )
+        if not event:
+            raise HTTPException(status_code=404, detail="Event not found")
 
-        for field, value in payload.model_dump(exclude_unset=True).items():
+        if event.user_id != current_user.id:
+            raise HTTPException(status_code=403, detail="Not allowed")
+
+        update_data = payload.model_dump(exclude_unset=True)
+
+        for field, value in update_data.items():
             setattr(event, field, value)
 
         return await self.repository.update(event)
