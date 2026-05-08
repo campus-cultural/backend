@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import date
 from enum import StrEnum
 
 from sqlalchemy import Boolean, CheckConstraint, Enum, LargeBinary, String
@@ -32,6 +33,8 @@ class User(Base):
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True, index=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
+    last_name: Mapped[str] = mapped_column(String(255), nullable=True)
+    birth_date: Mapped[date | None] = mapped_column(nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     ra: Mapped[str | None] = mapped_column(String(50), nullable=True, unique=True, index=True)
     profile_picture: Mapped[bytes | None] = mapped_column(LargeBinary, nullable=True)

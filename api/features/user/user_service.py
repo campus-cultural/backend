@@ -5,7 +5,7 @@ from pwdlib import PasswordHash
 from api.features.user.user import User, UserRole
 from api.features.user.user_repository import UserRepository
 from api.features.user.user_schemas import TokenOut, UserCreateIn, UserLoginIn, UserUpdateIn
-from api.shared.exceptions import ErrorCode, ResourceNotFoundError, UnauthorizedError
+from api.shared.exceptions import ErrorCode, ResourceNotFoundError, UnauthorizedError, BadRequestError
 from api.shared.security import create_access_token
 
 password_hash = PasswordHash.recommended()
@@ -22,7 +22,7 @@ class UserService:
             password_hash=password_hash.hash(payload.password),
         )
         if user.role == UserRole.ADMIN:
-            raise UnauthorizedError(
+            raise BadRequestError(
                 "Admin users cannot be created",
                 code=ErrorCode.INVALID_CREDENTIALS,
             )
@@ -55,8 +55,10 @@ class UserService:
             password_hash=password_hash.hash("admin123"),
             email="admin@example.com",
             name="super_user",
+            last_name="admin",
             is_active=True,
             ra=None,
+            birth_date=None,
         )
         return await self.repository.create(user)
 

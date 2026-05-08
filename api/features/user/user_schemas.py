@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import date
+
 from pydantic import BaseModel, ConfigDict, model_validator
 
 from api.features.user.user import UserRole
@@ -9,6 +11,8 @@ class UserBaseSchema(BaseModel):
     role: UserRole
     email: str
     name: str
+    last_name: str
+    birth_date: date | None = None
     is_active: bool
     ra: str | None = None
 
