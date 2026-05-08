@@ -322,7 +322,6 @@ def test_list_users_returns_created_users(client: TestClient) -> None:
     )
 
     response = client.get("/users", headers=admin_auth_headers(client))
-
     assert response.status_code == 200
     assert response.json() == [
         {

@@ -4,6 +4,8 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from api.features.event.event_controller import router as event_router
+from api.features.event.event_service import EventService
 from api.features.user.user_controller import router as user_router
 from api.features.user.user_repository import UserRepository
 from api.features.user.user_service import UserService
@@ -21,6 +23,7 @@ def create_app(database_url: str | None = None) -> FastAPI:
         async with database_manager.session_factory() as session:
             service = UserService(UserRepository(session))
             await service.ensure_default_admin()
+            event_service = EventService(session)
         yield
 
     app = FastAPI(title="Campus Cultural API", lifespan=lifespan)
@@ -31,6 +34,7 @@ def create_app(database_url: str | None = None) -> FastAPI:
         return {"status": "ok"}
 
     app.include_router(user_router)
+    app.include_router(event_router)
     return app
 
 

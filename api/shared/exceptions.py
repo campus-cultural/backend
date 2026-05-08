@@ -18,6 +18,7 @@ class ErrorCode(StrEnum):
     USER_RA_ALREADY_EXISTS = "user_ra_already_exists"
     VALIDATION_ERROR = "validation_error"
     INTERNAL_ERROR = "internal_error"
+    EVENT_NOT_FOUND = "event_not_found"
 
 
 class AppError(Exception):
@@ -95,9 +96,7 @@ class UnauthorizedError(AppError):
 
 async def app_error_handler(_: Request, exc: AppError) -> JSONResponse:
     headers = (
-        {"WWW-Authenticate": "Bearer"}
-        if exc.status_code == status.HTTP_401_UNAUTHORIZED
-        else None
+        {"WWW-Authenticate": "Bearer"} if exc.status_code == status.HTTP_401_UNAUTHORIZED else None
     )
     return JSONResponse(status_code=exc.status_code, content=exc.to_response(), headers=headers)
 
