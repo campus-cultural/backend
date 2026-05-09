@@ -27,7 +27,6 @@ class EventCreateOut(EventBaseSchema):
 class EventReadOut(EventBaseSchema):
     model_config = ConfigDict(from_attributes=True)
     name: str
-
     id: int
     created_at: datetime
 
@@ -42,6 +41,5 @@ class EventUpdateIn(BaseModel):
 
 class EventUpdateOut(EventBaseSchema):
     model_config = ConfigDict(from_attributes=True)
-
     id: int
     created_at: datetime

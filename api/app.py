@@ -5,7 +5,6 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from api.features.event.event_controller import router as event_router
-from api.features.event.event_service import EventService
 from api.features.user.user_controller import router as user_router
 from api.features.user.user_repository import UserRepository
 from api.features.user.user_service import UserService
