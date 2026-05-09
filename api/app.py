@@ -23,7 +23,6 @@ def create_app(database_url: str | None = None) -> FastAPI:
         async with database_manager.session_factory() as session:
             service = UserService(UserRepository(session))
             await service.ensure_default_admin()
-            event_service = EventService(session)
         yield
 
     app = FastAPI(title="Campus Cultural API", lifespan=lifespan)
