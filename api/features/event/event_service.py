@@ -21,7 +21,6 @@ class EventService:
 
     async def list_all(self) -> list[Event]:
         return await self.repository.list_all()
-    
 
     async def get_by_id(self, event_id: int) -> Event:
         event = await self.repository.get_by_id(event_id)
@@ -40,16 +39,22 @@ class EventService:
         event = await self.repository.get_by_id(event_id)
 
         if not event:
-            raise HTTPException(status_code=404, detail="Event not found")
+            raise ResourceNotFoundError(
+                f"Event {event_id} not found",
+                code=ErrorCode.EVENT_NOT_FOUND,
+                details={"event_id": event_id},
+            )
 
         if event.user_id != current_user.id:
-            raise HTTPException(status_code=403, detail="Not allowed")
+            raise ResourceNotFoundError(
+                "Event not found",
+                code=ErrorCode.EVENT_NOT_FOUND,
+            )
 
         update_data = payload.model_dump(exclude_unset=True)
 
         for field, value in update_data.items():
             setattr(event, field, value)
-
         return await self.repository.update(event)
 
     async def delete(self, event_id: int, user: User) -> None:

@@ -35,6 +35,7 @@ async def list_events(
     events = await service.list_all()
     return [EventReadOut.model_validate(event) for event in events]
 
+
 @router.get("/{event_id}", response_model=EventReadOut)
 async def get_event(
     event_id: int,

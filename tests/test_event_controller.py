@@ -14,6 +14,7 @@ def admin_auth_headers(client: TestClient) -> dict[str, str]:
 
 def event_payload() -> dict[str, object]:
     return {
+        "name": "Evento Legal",
         "description": "Um evento muito legal",
         "event_datetime": "2026-10-10T10:00:00",
         "event_location": "Laboratório de Informática",
@@ -33,6 +34,7 @@ def test_create_event_returns_created(client: TestClient) -> None:
     assert data["description"] == payload["description"]
     assert data["event_datetime"] == payload["event_datetime"]
     assert data["event_location"] == payload["event_location"]
+    assert data["name"] == payload["name"]
 
 
 def test_list_events_returns_list_of_events(client: TestClient) -> None:
@@ -58,6 +60,7 @@ def test_get_event_by_id_returns_event(client: TestClient) -> None:
     data = response.json()
 
     assert data["id"] == created_event["id"]
+    assert data["name"] == created_event["name"]
     assert data["event_datetime"] == created_event["event_datetime"]
     assert data["event_location"] == created_event["event_location"]
 
@@ -69,6 +72,7 @@ def test_update_event_returns_updated_event(client: TestClient) -> None:
 
     update_payload = {
         "event_datetime": "2026-12-25T18:00:00",
+        "name": "novo evento",
         "event_location": "Auditório Principal",
         "description": "Evento atualizado",
     }
@@ -83,6 +87,7 @@ def test_update_event_returns_updated_event(client: TestClient) -> None:
     data = response.json()
 
     assert data["id"] == created_event["id"]
+    assert data["name"] == update_payload["name"]
     assert data["event_datetime"].startswith(update_payload["event_datetime"])
     assert data["event_location"] == update_payload["event_location"]
     assert data["description"] == update_payload["description"]

@@ -23,6 +23,7 @@ def upgrade() -> None:
         "events",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("user_id", sa.Integer(), nullable=False),
+        sa.Column("name", sa.String(length=255), nullable=False),
         sa.Column("image", sa.LargeBinary(), nullable=True),
         sa.Column("created_at", sa.DateTime(), nullable=False),
         sa.Column("event_datetime", sa.DateTime(), nullable=False),

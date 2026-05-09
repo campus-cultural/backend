@@ -93,6 +93,7 @@ class UnauthorizedError(AppError):
             details=details,
         )
 
+
 class BadRequestError(AppError):
     def __init__(
         self,
