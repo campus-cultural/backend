@@ -20,7 +20,6 @@ class EventCreateIn(EventBaseSchema):
 class EventCreateOut(EventBaseSchema):
     model_config = ConfigDict(from_attributes=True)
     name: str
-
     id: int
     created_at: datetime
 
