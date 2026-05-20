@@ -18,6 +18,7 @@ class ErrorCode(StrEnum):
     USER_RA_ALREADY_EXISTS = "user_ra_already_exists"
     VALIDATION_ERROR = "validation_error"
     INTERNAL_ERROR = "internal_error"
+    EVENT_NOT_FOUND = "event_not_found"
 
 
 class AppError(Exception):
@@ -91,6 +92,7 @@ class UnauthorizedError(AppError):
             status_code=status.HTTP_401_UNAUTHORIZED,
             details=details,
         )
+
 
 class BadRequestError(AppError):
     def __init__(

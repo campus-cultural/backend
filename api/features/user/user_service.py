@@ -5,7 +5,12 @@ from pwdlib import PasswordHash
 from api.features.user.user import User, UserRole
 from api.features.user.user_repository import UserRepository
 from api.features.user.user_schemas import TokenOut, UserCreateIn, UserLoginIn, UserUpdateIn
-from api.shared.exceptions import ErrorCode, ResourceNotFoundError, UnauthorizedError, BadRequestError
+from api.shared.exceptions import (
+    BadRequestError,
+    ErrorCode,
+    ResourceNotFoundError,
+    UnauthorizedError,
+)
 from api.shared.security import create_access_token
 
 password_hash = PasswordHash.recommended()
