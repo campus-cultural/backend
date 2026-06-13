@@ -8,6 +8,8 @@ from fastapi import Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.features.event.event_repository import EventRepository
+from api.features.event.event_service import EventService
 from api.features.user.user import User
 from api.features.user.user_repository import UserRepository
 from api.features.user.user_service import UserService
@@ -27,6 +29,13 @@ def get_user_service(
 ) -> UserService:
     repository = UserRepository(session)
     return UserService(repository)
+
+
+def get_event_service(
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+) -> EventService:
+    repository = EventRepository(session)
+    return EventService(repository)
 
 
 async def get_current_user(
