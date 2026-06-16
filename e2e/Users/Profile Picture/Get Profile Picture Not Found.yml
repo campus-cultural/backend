@@ -1,0 +1,38 @@
+info:
+  name: Get Profile Picture Not Found
+  type: http
+  seq: 6
+
+http:
+  method: GET
+  url: "{{baseUrl}}/users/{{adminId}}/profile-picture"
+  headers:
+    - name: accept
+      value: application/octet-stream
+  body:
+    type: none
+  auth:
+    type: bearer
+    token: "{{adminToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 404", function() {
+          expect(res.status).to.equal(404);
+        });
+        test("error code is user_profile_picture_not_found", function() {
+          expect(res.body.code).to.equal("user_profile_picture_not_found");
+        });
+        test("details include user_id", function() {
+          expect(res.body.details).to.have.property("user_id");
+        });
+
+settings:
+  encodeUrl: true
+
+docs: |-
+  Tenta baixar a foto do admin (que nunca tem foto) usando `adminToken` e `adminId` capturados no login.
+
+  **Espera:** 404, `code: user_profile_picture_not_found` e `details.user_id` presente.

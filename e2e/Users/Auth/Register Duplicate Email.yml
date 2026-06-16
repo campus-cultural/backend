@@ -1,0 +1,48 @@
+info:
+  name: Register Duplicate Email
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseUrl}}/users/register"
+  headers:
+    - name: accept
+      value: application/json
+    - name: content-type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "role": "student",
+        "email": "{{studentEmail}}",
+        "name": "Dup",
+        "last_name": "Email",
+        "password": "secret123",
+        "is_active": true,
+        "ra": "RA-DUP-{{$timestamp}}",
+        "birth_date": null
+      }
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 409", function() {
+          expect(res.status).to.equal(409);
+        });
+        test("error code is user_email_already_exists", function() {
+          expect(res.body.code).to.equal("user_email_already_exists");
+        });
+        test("details point at email", function() {
+          expect(res.body.details.field).to.equal("email");
+        });
+
+settings:
+  encodeUrl: true
+
+docs: |-
+  Reusa o e-mail do estudante já registrado.
+
+  **Espera:** 409, `code: user_email_already_exists` e `details.field = "email"`.

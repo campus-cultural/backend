@@ -1,0 +1,33 @@
+info:
+  name: Get Event by ID
+  type: http
+  seq: 5
+
+http:
+  method: GET
+  url: "{{baseUrl}}/events/{{eventId}}"
+  headers:
+    - name: accept
+      value: application/json
+  body:
+    type: none
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 200", function() {
+          expect(res.status).to.equal(200);
+        });
+        test("returns the requested event", function() {
+          expect(String(res.body.id)).to.equal(bru.getVar("eventId"));
+          expect(res.body.name).to.equal("Evento E2E");
+        });
+
+settings:
+  encodeUrl: true
+
+docs: |-
+  Busca o evento criado pelo `eventId` (rota pública).
+
+  **Espera:** 200 e `name` igual ao usado em `Create Event`.

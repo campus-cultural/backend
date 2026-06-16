@@ -1,0 +1,45 @@
+info:
+  name: Register Missing Field
+  type: http
+  seq: 7
+
+http:
+  method: POST
+  url: "{{baseUrl}}/users/register"
+  headers:
+    - name: accept
+      value: application/json
+    - name: content-type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "role": "student",
+        "email": "missing-{{$timestamp}}@e2e.test",
+        "password": "secret123"
+      }
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 422", function() {
+          expect(res.status).to.equal(422);
+        });
+        test("error code is validation_error", function() {
+          expect(res.body.code).to.equal("validation_error");
+        });
+        test("details list missing fields", function() {
+          expect(res.body.details).to.have.property("errors");
+          expect(res.body.details.errors).to.be.an("array");
+          expect(res.body.details.errors.length).to.be.above(0);
+        });
+
+settings:
+  encodeUrl: true
+
+docs: |-
+  Envia payload incompleto (sem `role`, `name`, etc).
+
+  **Espera:** 422, `code: validation_error` e `details.errors` listando os campos faltantes.

@@ -1,0 +1,32 @@
+info:
+  name: Delete Event
+  type: http
+  seq: 12
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/events/{{eventId}}"
+  headers:
+    - name: accept
+      value: application/json
+  body:
+    type: none
+  auth:
+    type: bearer
+    token: "{{authToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 204", function() {
+          expect(res.status).to.equal(204);
+        });
+
+settings:
+  encodeUrl: true
+
+docs: |-
+  Remove o evento criado. Roda por último na pasta para que `List Events` e `Get Event by ID` ainda enxerguem o registro.
+
+  **Espera:** 204 (sem body).

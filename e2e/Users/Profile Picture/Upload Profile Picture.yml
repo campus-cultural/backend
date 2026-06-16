@@ -1,0 +1,45 @@
+info:
+  name: Upload Profile Picture
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/users/{{studentId}}/profile-picture"
+  headers:
+    - name: accept
+      value: application/json
+    - name: content-type
+      value: application/octet-stream
+  body:
+    type: file
+    data:
+      - filePath: ./fixtures/pixel.png
+        # Path is resolved relative to the collection root (e2e/), not this file.
+        contentType: application/octet-stream
+        selected: true
+  auth:
+    type: bearer
+    token: "{{authToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 200", function() {
+          expect(res.status).to.equal(200);
+        });
+        test("returns the student user shape", function() {
+          expect(String(res.body.id)).to.equal(bru.getVar("studentId"));
+          expect(res.body.role).to.equal("student");
+        });
+
+settings:
+  encodeUrl: true
+
+docs: |-
+  Faz upload do PNG 1x1 (`fixtures/pixel.png`) como `application/octet-stream` para o estudante.
+
+  **Espera:** 200 e body no shape de `UserReadOut`.
+
+  > O `filePath` é resolvido a partir da raiz da collection (`e2e/`), não do diretório do request.

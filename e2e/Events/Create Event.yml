@@ -1,0 +1,54 @@
+info:
+  name: Create Event
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/events"
+  headers:
+    - name: accept
+      value: application/json
+    - name: content-type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Evento E2E",
+        "event_datetime": "2027-10-10T10:00:00",
+        "event_location": "Laboratório de Informática",
+        "description": "Evento criado pela suite Bruno",
+        "image": null
+      }
+  auth:
+    type: bearer
+    token: "{{authToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 201", function() {
+          expect(res.status).to.equal(201);
+        });
+        test("body echoes the payload", function() {
+          expect(res.body.name).to.equal("Evento E2E");
+          expect(res.body.event_location).to.equal("Laboratório de Informática");
+          expect(res.body.description).to.equal("Evento criado pela suite Bruno");
+        });
+        test("body has id and created_at", function() {
+          expect(res.body).to.have.property("id");
+          expect(res.body).to.have.property("created_at");
+        });
+        bru.setVar("eventId", String(res.body.id));
+
+settings:
+  encodeUrl: true
+
+docs: |-
+  Cria um evento como o estudante autenticado.
+
+  **Espera:** 201, body ecoando `name`/`event_location`/`description` mais `id` e `created_at`.
+
+  Armazena `eventId` para uso pelos próximos requests da pasta.

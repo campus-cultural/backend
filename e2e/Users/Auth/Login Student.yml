@@ -1,0 +1,44 @@
+info:
+  name: Login Student
+  type: http
+  seq: 9
+
+http:
+  method: POST
+  url: "{{baseUrl}}/users/login"
+  headers:
+    - name: accept
+      value: application/json
+    - name: content-type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "email": "{{studentEmail}}",
+        "password": "{{studentPassword}}"
+      }
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 200", function() {
+          expect(res.status).to.equal(200);
+        });
+        test("token shape is correct", function() {
+          expect(res.body.token_type).to.equal("bearer");
+          expect(res.body.access_token).to.be.a("string").and.not.empty;
+        });
+        bru.setVar("authToken", res.body.access_token);
+        bru.setVar("studentToken", res.body.access_token);
+
+settings:
+  encodeUrl: true
+
+docs: |-
+  Loga como o estudante registrado neste run.
+
+  **Espera:** 200 e shape de token correto.
+
+  Grava `authToken` — é ele que os requests autenticados subsequentes consomem via `{{authToken}}`.

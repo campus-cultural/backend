@@ -1,0 +1,41 @@
+info:
+  name: Get User by ID
+  type: http
+  seq: 3
+
+http:
+  method: GET
+  url: "{{baseUrl}}/users/{{studentId}}"
+  headers:
+    - name: accept
+      value: application/json
+  body:
+    type: none
+  auth:
+    type: bearer
+    token: "{{authToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 200", function() {
+          expect(res.status).to.equal(200);
+        });
+        test("returns the requested student", function() {
+          expect(String(res.body.id)).to.equal(bru.getVar("studentId"));
+          expect(res.body.role).to.equal("student");
+          expect(res.body.email).to.equal(bru.getVar("studentEmail"));
+        });
+        test("no password fields leak", function() {
+          expect(res.body).to.not.have.property("password");
+          expect(res.body).to.not.have.property("password_hash");
+        });
+
+settings:
+  encodeUrl: true
+
+docs: |-
+  Busca o estudante pelo `studentId`.
+
+  **Espera:** 200, identidade preservada (`id`, `email`, `role`) e nenhum campo `password`/`password_hash` na resposta.

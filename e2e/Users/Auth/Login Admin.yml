@@ -1,0 +1,46 @@
+info:
+  name: Login Admin
+  type: http
+  seq: 8
+
+http:
+  method: POST
+  url: "{{baseUrl}}/users/login"
+  headers:
+    - name: accept
+      value: application/json
+    - name: content-type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "email": "{{adminEmail}}",
+        "password": "{{adminPassword}}"
+      }
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 200", function() {
+          expect(res.status).to.equal(200);
+        });
+        test("token is bearer", function() {
+          expect(res.body.token_type).to.equal("bearer");
+          expect(res.body.access_token).to.be.a("string").and.not.empty;
+        });
+        bru.setVar("adminToken", res.body.access_token);
+        // Decode the JWT payload to capture the admin id (sub claim) for downstream tests.
+        const payload = JSON.parse(Buffer.from(res.body.access_token.split(".")[1], "base64").toString());
+        bru.setVar("adminId", String(payload.sub));
+
+settings:
+  encodeUrl: true
+
+docs: |-
+  Loga como o admin padrão seedado pelo lifespan.
+
+  **Espera:** 200, `token_type: bearer` e `access_token` não vazio.
+
+  Decodifica o claim `sub` do JWT para armazenar `adminId` e guarda `adminToken` (usados por testes que exigem o admin).
