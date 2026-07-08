@@ -19,6 +19,8 @@ class ErrorCode(StrEnum):
     VALIDATION_ERROR = "validation_error"
     INTERNAL_ERROR = "internal_error"
     EVENT_NOT_FOUND = "event_not_found"
+    EVENT_ALREADY_SUBSCRIBED = "event_already_subscribed"
+    EVENT_SUBSCRIPTION_NOT_FOUND = "event_subscription_not_found"
 
 
 class AppError(Exception):
