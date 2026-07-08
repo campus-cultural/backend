@@ -1,0 +1,18 @@
+opencollection: 1.0.0
+
+info:
+  name: Campus Cultural E2E
+
+docs:
+  type: text/markdown
+  content: |-
+    # Campus Cultural E2E
+
+    End-to-end coverage for every route under `api/features/` plus the global `/health`.
+
+    Run order (per folder seq): Health → Users/Auth → Users/CRUD → Users/Profile Picture → Events.
+    The Student user registered in `Users/Auth/Register Student` is the data fixture for everything that follows;
+    it is deleted by the final request so the DB returns to its post-startup state (admin only).
+
+    Auth chain: `Login Student` writes `{{authToken}}` to runtime; the collection-level bearer auth picks it up
+    automatically. Unauthorized negative tests override `auth.type: none` at the request level.

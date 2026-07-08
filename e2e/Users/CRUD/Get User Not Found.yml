@@ -1,0 +1,38 @@
+info:
+  name: Get User Not Found
+  type: http
+  seq: 5
+
+http:
+  method: GET
+  url: "{{baseUrl}}/users/99999999"
+  headers:
+    - name: accept
+      value: application/json
+  body:
+    type: none
+  auth:
+    type: bearer
+    token: "{{authToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 404", function() {
+          expect(res.status).to.equal(404);
+        });
+        test("error code is user_not_found", function() {
+          expect(res.body.code).to.equal("user_not_found");
+        });
+        test("details include user_id", function() {
+          expect(res.body.details.user_id).to.equal(99999999);
+        });
+
+settings:
+  encodeUrl: true
+
+docs: |-
+  Get com id inexistente (`99999999`).
+
+  **Espera:** 404, `code: user_not_found` e `details.user_id = 99999999`.

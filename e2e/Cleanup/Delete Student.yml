@@ -1,0 +1,32 @@
+info:
+  name: Delete Student
+  type: http
+  seq: 1
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/users/{{studentId}}"
+  headers:
+    - name: accept
+      value: application/json
+  body:
+    type: none
+  auth:
+    type: bearer
+    token: "{{adminToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 204", function() {
+          expect(res.status).to.equal(204);
+        });
+
+settings:
+  encodeUrl: true
+
+docs: |-
+  Remove o estudante seedado usando `adminToken` (o estudante não pode se auto-deletar com o token expirado por ações anteriores).
+
+  **Espera:** 204. Após este request, o banco volta ao estado inicial (apenas o admin padrão).

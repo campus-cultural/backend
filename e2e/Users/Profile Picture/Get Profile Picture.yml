@@ -1,0 +1,39 @@
+info:
+  name: Get Profile Picture
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{baseUrl}}/users/{{studentId}}/profile-picture"
+  headers:
+    - name: accept
+      value: application/octet-stream
+  body:
+    type: none
+  auth:
+    type: bearer
+    token: "{{authToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 200", function() {
+          expect(res.status).to.equal(200);
+        });
+        test("content-type is octet-stream", function() {
+          const ct = res.headers["content-type"] || res.headers["Content-Type"];
+          expect(ct).to.include("application/octet-stream");
+        });
+        test("body is non-empty", function() {
+          expect(res.body).to.not.be.empty;
+        });
+
+settings:
+  encodeUrl: true
+
+docs: |-
+  Baixa a foto previamente carregada para o estudante.
+
+  **Espera:** 200, `Content-Type: application/octet-stream` e body binário não vazio.

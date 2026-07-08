@@ -31,6 +31,7 @@ async def create_event(
 @router.get("", response_model=list[EventReadOut])
 async def list_events(
     service: Annotated[EventService, Depends(get_event_service)],
+    current_user: Annotated[User, Depends(get_current_user)],
 ) -> list[EventReadOut]:
     events = await service.list_all()
     return [EventReadOut.model_validate(event) for event in events]
@@ -40,6 +41,7 @@ async def list_events(
 async def get_event(
     event_id: int,
     service: Annotated[EventService, Depends(get_event_service)],
+    current_user: Annotated[User, Depends(get_current_user)],
 ) -> EventReadOut:
     event = await service.get_by_id(event_id)
     return EventReadOut.model_validate(event)

@@ -1,0 +1,35 @@
+info:
+  name: Health Check
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/health"
+  headers:
+    - name: accept
+      value: application/json
+  body:
+    type: none
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 200", function() {
+          expect(res.status).to.equal(200);
+        });
+        test("body is ok", function() {
+          expect(res.body).to.deep.equal({ status: "ok" });
+        });
+        test("responds quickly", function() {
+          expect(res.responseTime).to.be.below(2000);
+        });
+
+settings:
+  encodeUrl: true
+
+docs: |-
+  Verifica o healthcheck público.
+
+  **Espera:** 200 com body `{status: "ok"}` e resposta abaixo de 2s.

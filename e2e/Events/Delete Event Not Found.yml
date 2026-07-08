@@ -1,0 +1,35 @@
+info:
+  name: Delete Event Not Found
+  type: http
+  seq: 11
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/events/99999999"
+  headers:
+    - name: accept
+      value: application/json
+  body:
+    type: none
+  auth:
+    type: bearer
+    token: "{{authToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 404", function() {
+          expect(res.status).to.equal(404);
+        });
+        test("error code is event_not_found", function() {
+          expect(res.body.code).to.equal("event_not_found");
+        });
+
+settings:
+  encodeUrl: true
+
+docs: |-
+  Delete em id inexistente.
+
+  **Espera:** 404 com `code: event_not_found`.

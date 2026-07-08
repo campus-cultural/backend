@@ -1,0 +1,48 @@
+info:
+  name: Update User Duplicate Email
+  type: http
+  seq: 9
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/users/{{studentId}}"
+  headers:
+    - name: accept
+      value: application/json
+    - name: content-type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "role": "student",
+        "email": "{{adminEmail}}",
+        "name": "Conflict",
+        "last_name": "Email",
+        "password": "{{studentPassword}}",
+        "is_active": true,
+        "ra": "{{studentRa}}",
+        "birth_date": null
+      }
+  auth:
+    type: bearer
+    token: "{{authToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 409", function() {
+          expect(res.status).to.equal(409);
+        });
+        test("error code is user_email_already_exists", function() {
+          expect(res.body.code).to.equal("user_email_already_exists");
+        });
+
+settings:
+  encodeUrl: true
+
+docs: |-
+  Tenta mudar o e-mail do estudante para o do admin.
+
+  **Espera:** 409 com `code: user_email_already_exists`.

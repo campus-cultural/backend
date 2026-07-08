@@ -10,6 +10,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.features.event.event_repository import EventRepository
 from api.features.event.event_service import EventService
+from api.features.subscription.subscription_repository import SubscriptionRepository
+from api.features.subscription.subscription_service import SubscriptionService
 from api.features.user.user import User
 from api.features.user.user_repository import UserRepository
 from api.features.user.user_service import UserService
@@ -36,6 +38,14 @@ def get_event_service(
 ) -> EventService:
     repository = EventRepository(session)
     return EventService(repository)
+
+
+def get_subscription_service(
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+) -> SubscriptionService:
+    repository = SubscriptionRepository(session)
+    event_repository = EventRepository(session)
+    return SubscriptionService(repository, event_repository)
 
 
 async def get_current_user(

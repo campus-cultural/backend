@@ -1,0 +1,32 @@
+info:
+  name: Delete Professor
+  type: http
+  seq: 10
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/users/{{professorId}}"
+  headers:
+    - name: accept
+      value: application/json
+  body:
+    type: none
+  auth:
+    type: bearer
+    token: "{{authToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 204", function() {
+          expect(res.status).to.equal(204);
+        });
+
+settings:
+  encodeUrl: true
+
+docs: |-
+  Remove o professor registrado em `Users/Auth/Register Professor`. Roda dentro do fluxo CRUD para liberar o registro antes do final do run.
+
+  **Espera:** 204 (sem body).

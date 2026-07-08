@@ -1,0 +1,41 @@
+info:
+  name: Update Event Not Found
+  type: http
+  seq: 9
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/events/99999999"
+  headers:
+    - name: accept
+      value: application/json
+    - name: content-type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Evento Fantasma"
+      }
+  auth:
+    type: bearer
+    token: "{{authToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 404", function() {
+          expect(res.status).to.equal(404);
+        });
+        test("error code is event_not_found", function() {
+          expect(res.body.code).to.equal("event_not_found");
+        });
+
+settings:
+  encodeUrl: true
+
+docs: |-
+  Update em id inexistente.
+
+  **Espera:** 404 com `code: event_not_found`.
