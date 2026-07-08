@@ -106,6 +106,15 @@ def test_delete_event_removes_resource(client: TestClient) -> None:
     assert get_response.status_code == 404
 
 
-def test_access_events_returns_list_of_events(client: TestClient) -> None:
+def test_list_events_without_token_returns_unauthorized(client: TestClient) -> None:
     response = client.get("/events")
-    assert response.status_code == 200
+    assert response.status_code == 401
+
+
+def test_get_event_without_token_returns_unauthorized(client: TestClient) -> None:
+    headers = admin_auth_headers(client)
+    created_event = client.post("/events", json=event_payload(), headers=headers).json()
+
+    response = client.get(f"/events/{created_event['id']}")
+
+    assert response.status_code == 401
